@@ -30,10 +30,7 @@ export function initIndex() {
         themeIcon.classList.toggle('fa-moon', !toDark);
         localStorage.setItem('theme', toDark ? 'dark' : 'light');
     });
-
-    // ===== Navegación botones (reemplazo de @onclick)
-    $('#btnCrearPerfil').addEventListener('click', () => window.location.href = '/register');
-    $('#btnExplorar').addEventListener('click', () => window.location.href = 'explore.html');
+    
 
     // ===== Modal de Match (demo)
     const matchModal = $('#matchModal');
