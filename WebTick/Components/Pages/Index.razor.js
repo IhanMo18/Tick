@@ -32,7 +32,7 @@ export function initIndex() {
     });
 
     // ===== Navegación botones (reemplazo de @onclick)
-    $('#btnCrearPerfil').addEventListener('click', () => window.location.href = 'create-profile.html');
+    $('#btnCrearPerfil').addEventListener('click', () => window.location.href = '/register');
     $('#btnExplorar').addEventListener('click', () => window.location.href = 'explore.html');
 
     // ===== Modal de Match (demo)

@@ -44,7 +44,7 @@
         </p>
 
         <div class="center" style="gap:16px; justify-content:center; margin-top:28px; flex-wrap:wrap">
-          <button @onclick="GoToRegister" id="btnCrearPerfil" class="btn btn-primary">Crear perfil</button>
+          <button type="button" @onclick="GoToRegister" id="btnCrearPerfil" class="btn btn-primary">Crear perfil</button>
           <button id="btnExplorar" class="btn btn-ghost">Explorar</button>
         </div>
       </div>
@@ -256,7 +256,7 @@
       if (firstRender)
       {
         _module = await JS.InvokeAsync<IJSObjectReference>(
-          "import", "./Index.razor.js");
+          "import", "./Components/Pages/Index.razor.js");
         await _module.InvokeVoidAsync("initIndex");
       }
     }
