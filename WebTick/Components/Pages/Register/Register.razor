@@ -1,0 +1,224 @@
+@page "/register"
+
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SafeTeen — Crear perfil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="light">
+<!-- Header -->
+<header class="header">
+    <div class="container">
+        <div class="row">
+            <div class="brand">
+                <div class="brand-badge" aria-hidden="true"><i class="fas fa-heart"></i></div>
+                <a href="index.html" class="brand-name">SafeTeen</a>
+            </div>
+            <nav class="nav" aria-label="Principal">
+                <a href="index.html" class="link">Inicio</a>
+                <button id="themeToggle" class="icon-btn" aria-label="Cambiar tema">
+                    <i id="themeIcon" class="fas fa-moon"></i>
+                </button>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="px">
+        <div class="container" style="max-width:56rem">
+            <!-- Stepper -->
+            <div class="card card-pad mb-6">
+                <div id="stepper" class="stepper-wrap">
+                    <div id="slider" class="step-slider" style="width:25%"></div>
+                    <div class="tabs grid grid-4" style="margin-top:.25rem">
+                        <button id="tab0" class="tab" data-step="0" data-active="true">1. Básicos</button>
+                        <button id="tab1" class="tab" data-step="1">2. Información</button>
+                        <button id="tab2" class="tab" data-step="2">3. ¿Qué buscas?</button>
+                        <button id="tab3" class="tab" data-step="3">4. Cuenta</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card del formulario -->
+            <div class="card card-pad-lg">
+                <!-- PASO 0: BÁSICOS -->
+                <form id="step0" class="space-y-6 in-right" autocomplete="off">
+                    <h2 class="text-xl font-bold">Datos básicos</h2>
+
+                    <div>
+                        <label for="alias">Alias público</label>
+                        <input id="alias" class="input" type="text" placeholder="Ej: AlexGamer" required/>
+                        <p class="text-sm text-muted mt-1">Se mostrará en tu perfil.</p>
+                    </div>
+
+                    <div class="grid grid-2 grid-md-1" style="gap:24px">
+                        <div>
+                            <label for="fechaNac">Fecha de nacimiento</label>
+                            <input id="fechaNac" type="date" class="input" required/>
+                            <p id="edadMsg" class="mt-2 text-sm"></p>
+                        </div>
+                        <div>
+                            <label for="ciudad">Ciudad (aprox.)</label>
+                            <input id="ciudad" type="text" class="input" placeholder="Ej: Madrid" required/>
+                            <p class="text-sm text-muted mt-1">Nunca mostraremos ubicación exacta.</p>
+                        </div>
+                    </div>
+
+                    <div class="center">
+                        <a href="index.html" class="btn btn-ghost">Cancelar</a>
+                        <button id="to1" class="btn btn-lg btn-primary" disabled>Siguiente</button>
+                    </div>
+                </form>
+
+                <!-- PASO 1: INFORMACIÓN -->
+                <form id="step1" class="space-y-6 hidden" autocomplete="off">
+                    <h2 class="text-xl font-bold">Información de tu perfil</h2>
+
+                    <div class="grid grid-3 grid-md-1" style="gap:24px; align-items:start">
+                        <div>
+                            <label>Avatar</label>
+                            <div class="avatar-wrap">
+                                <img id="avatarPreview" alt="Vista previa del avatar" class="hidden" />
+                                <i id="avatarIcon" class="fas fa-user" style="font-size:40px; color:#9ca3af"></i>
+                            </div>
+                            <label class="avatar-action mt-3" style="cursor:pointer">
+                                <i class="fas fa-upload"></i><span>Subir imagen</span>
+                                <input id="avatar" type="file" accept="image/*" class="hidden"/>
+                            </label>
+                        </div>
+
+                        <div class="space-y-6" style="grid-column:span 2">
+                            <div>
+                                <label for="bio">Bio breve</label>
+                                <textarea id="bio" rows="4" maxlength="200" class="input" placeholder="Cuenta algo sobre ti (máx. 200 caracteres)"></textarea>
+                                <div class="text-sm text-muted mt-1"><span id="bioCount">0</span>/200</div>
+                            </div>
+
+                            <div>
+                                <label for="interesInput">Intereses</label>
+                                <div class="center-start">
+                                    <input id="interesInput" type="text" class="input" style="flex:1" placeholder="Escribe y pulsa Enter"/>
+                                    <button type="button" id="addInteres" class="btn btn-ghost">Añadir</button>
+                                </div>
+                                <div id="interesesBox" class="center-start" style="flex-wrap:wrap; gap:8px; margin-top:12px"></div>
+                                <p class="text-sm text-muted mt-1">Máximo 8 intereses.</p>
+                            </div>
+
+                            <div class="grid grid-2 grid-md-1" style="gap:24px">
+                                <label class="center-start">
+                                    <input id="shareCity" type="checkbox" /><span>Mostrar ciudad aproximada</span>
+                                </label>
+                                <label class="center-start">
+                                    <input id="hideOnline" type="checkbox" /><span>Ocultar estado “en línea”</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="center">
+                        <button type="button" id="back0" class="btn btn-ghost">Atrás</button>
+                        <button id="to2" class="btn btn-lg btn-primary">Siguiente</button>
+                    </div>
+                </form>
+
+                <!-- PASO 2: ¿QUÉ BUSCAS? -->
+                <form id="step2" class="space-y-6 hidden" autocomplete="off">
+                    <h2 class="text-xl font-bold">¿Qué buscas?</h2>
+
+                    <div class="grid grid-2 grid-md-1" style="gap:24px">
+                        <div>
+                            <label>Tipo de conexión</label>
+                            <div class="center-start" style="flex-wrap:wrap; gap:8px">
+                                <button type="button" data-opt="amistad" class="chip" aria-pressed="false">Amistad</button>
+                                <button type="button" data-opt="estudio" class="chip" aria-pressed="false">Estudiar juntos</button>
+                                <button type="button" data-opt="actividades" class="chip" aria-pressed="false">Actividades/Hobbies</button>
+                                <button type="button" data-opt="otro" class="chip" aria-pressed="false">Otro</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label>Rango de edad preferido (13–17)</label>
+                            <div class="center-start">
+                                <input id="ageMin" type="number" min="13" max="17" value="13" class="input w-28"/>
+                                <span class="text-sm text-muted">a</span>
+                                <input id="ageMax" type="number" min="13" max="17" value="17" class="input w-28"/>
+                            </div>
+                            <p id="agePrefMsg" class="text-sm mt-2"></p>
+                        </div>
+
+                        <div style="grid-column:1/-1">
+                            <label>Intereses en común (opcional)</label>
+                            <input id="interesesDeseados" class="input" placeholder="Ej: música, arte, videojuegos"/>
+                            <p class="text-sm text-muted mt-1">Usaremos esto para priorizar coincidencias.</p>
+                        </div>
+
+                        <div class="grid grid-2 grid-md-1" style="gap:24px">
+                            <label class="center-start">
+                                <input id="onlyCommon" type="checkbox"/><span>Mostrar solo perfiles con intereses comunes</span>
+                            </label>
+                            <label class="center-start">
+                                <input id="suggestions" type="checkbox" checked/><span>Recibir sugerencias semanales</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="center">
+                        <button type="button" id="back1" class="btn btn-ghost">Atrás</button>
+                        <button id="to3" class="btn btn-lg btn-primary">Siguiente</button>
+                    </div>
+                </form>
+
+                <!-- PASO 3: CUENTA -->
+                <form id="step3" class="space-y-6 hidden" autocomplete="off">
+                    <h2 class="text-xl font-bold">Crea tu cuenta</h2>
+
+                    <div class="grid grid-2 grid-md-1" style="gap:24px">
+                        <div>
+                            <label for="email">Correo</label>
+                            <input id="email" type="email" class="input" placeholder="tucorreo@ejemplo.com" required/>
+                            <p id="emailMsg" class="text-sm mt-2"></p>
+                        </div>
+                        <div>
+                            <label for="pwd">Contraseña</label>
+                            <div style="position:relative">
+                                <input id="pwd" type="password" class="input" style="padding-right:3rem" placeholder="Mínimo 8 caracteres" required/>
+                                <button type="button" id="togglePwd" class="text-sm" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); border:0; background:transparent; color:#6b7280">Ver</button>
+                            </div>
+                            <div style="height:8px; border-radius:8px; background:#e5e7eb; margin-top:8px; overflow:hidden">
+                                <div id="meter" style="height:100%; width:0; background:#22c55e; transition:width .2s"></div>
+                            </div>
+                            <p id="pwdMsg" class="text-sm mt-2"></p>
+                        </div>
+                        <div>
+                            <label for="pwd2">Repite contraseña</label>
+                            <input id="pwd2" type="password" class="input" required/>
+                            <p id="pwd2Msg" class="text-sm mt-2"></p>
+                        </div>
+                        <div style="grid-column:1/-1">
+                            <label class="center-start" style="align-items:flex-start">
+                                <input id="consent" type="checkbox" />
+                                <span>Acepto las normas de la comunidad y la política de privacidad.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="center">
+                        <button type="button" id="back2" class="btn btn-ghost">Atrás</button>
+                        <button id="save" class="btn btn-lg btn-primary" disabled>Crear cuenta y guardar</button>
+                    </div>
+                </form>
+
+                <!-- Toast -->
+                <div id="toast" class="hidden">Perfil creado. Redirigiendo…</div>
+            </div>
+        </div>
+    </section>
+</main>
+
+
+</body>
+</html>

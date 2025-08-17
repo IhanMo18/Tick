@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeTeen Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <style>
+        :root {
+            --color-bg: #0f0e17;
+            --color-card: #16151f;
+            --color-primary: #7c3aed;
+            --color-primary-foreground: #ffffff;
+            --color-accent: #3b82f6;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+            --color-muted: #6b7280;
+            --ring: 0 0 0 3px rgba(124, 58, 237, 0.5);
+        }
+
+        .light {
+            --color-bg: #f9fafb;
+            --color-card: #ffffff;
+            --color-primary: #8b5cf6;
+            --color-primary-foreground: #ffffff;
+            --color-accent: #2563eb;
+            --color-success: #059669;
+            --color-warning: #d97706;
+            --color-danger: #dc2626;
+            --color-muted: #9ca3af;
+            --ring: 0 0 0 3px rgba(139, 92, 246, 0.5);
+        }
+
+        @layer base {
+            body {
+                @apply bg-[--color-bg] text-gray-200 transition-colors duration-200;
+            }
+            .light body {
+                @apply text-gray-800;
+            }
+
+            .card {
+                @apply bg-[--color-card] rounded-lg shadow-md p-4 border border-gray-800/50;
+            }
+            .light .card {
+                @apply border-gray-200;
+            }
+
+            .btn-primary {
+                @apply bg-[--color-primary] text-[--color-primary-foreground] px-4 py-2 rounded-md hover:bg-opacity-90 transition-all;
+            }
+
+            .btn-accent {
+                @apply bg-[--color-accent] text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-all;
+            }
+
+            .btn-danger {
+                @apply bg-[--color-danger] text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition-all;
+            }
+
+            .ring-focus {
+                @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[--color-bg] focus:ring-[--color-primary];
+            }
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .animate-pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .slide-in-right {
+            animation: slideInRight 0.3s ease-out forwards;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.2s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .scale-in {
+            animation: scaleIn 0.2s ease-out forwards;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+<div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-[--color-card] border-r border-gray-800/50 transition-all duration-200 ease-in-out flex-shrink-0">
+        <div class="flex items-center justify-between p-4 border-b border-gray-800/50">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[--color-primary]">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span class="text-xl font-bold">SafeTeen</span>
+            </div>
+            <button class="p-1 rounded-md hover:bg-gray-800/50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <nav class="p-4 space-y-1">
+            <div class="space-y-2">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Main</p>
+                <a href="#" class="flex items-center space-x-2 px-3 py-2 rounded-md bg-[--color-primary]/10 text-[--color-primary]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="space-y-2">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Community</p>
+                <a href="#" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-800/50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>Users</span>
+                </a>
+                <a href="#" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-800/50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span>Moderation</span>
+                </a>
+                <a href="#" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-800/50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <span>Announcements</span>
+                </a>
+            </div>
+
+            <div class="space-y-2">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Catalogs</p>
+                <a href="#" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-800/50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <span>Categories</span>
+                </a>
+                <a href="#" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-800/50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                    <span>Universities</span>
+                </a>
+                <a href="#" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-800/50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <span>Countries</span>
+                </a>
+                <a href="#" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-800/50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 12h20M12 2v20M7 7l10 10M7 17l10-10"></path>
+                    </svg>
+                    <span>Languages</span>
+                </a>
+            </div>
+
+            <div class="space-y-2">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Administration</p>
+                <a href="#" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-800/50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <line x1="20" y1="8" x2="20" y2="14"></line>
+                        <line x1="23" y1="11" x2="17" y2="11"></line>
+                    </svg>
+                    <span>Admins</span>
+                </a>
+                <a href="#" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-800/50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    <span>Roles & Permissions</span>
+                </a>
+                <a href="#" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-800/50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <span>Audit Log</span>
+                </a>
+            </div>
+
+            <div class="space-y-2">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">System</p>
+                <a href="#" class="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-800/50 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    <span>Settings</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Topbar -->
+        <header class="bg-[--color-card] border-b border-gray-800/50 p-4 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <button class="p-1 rounded-md hover:bg-gray-800/50">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+
+                <div class="relative">
+                    <input type="text" placeholder="Search..." class="bg-gray-800/50 border border-gray-700 rounded-md pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-[--color-primary] focus:border-transparent w-64">
+                    <div class="absolute left-3 top-2.5 text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-1">
+                    <span class="text-sm text-gray-400">Admins online:</span>
+                    <div class="flex -space-x-2">
+                        <div class="relative">
+                            <div class="w-8 h-8 rounded-full bg-[--color-primary] flex items-center justify-center text-white text-xs font-bold">JD</div>
+                            <span class="absolute bottom-0 right-0 block h-2 w-2 rounded-full ring-2 ring-[--color-card] bg-[--color-success]"></span>
+                        </div>
+                        <div class="relative">
+                            <div class="w-8 h-8 rounded-full bg-[--color-accent] flex items-center justify-center text-white text-xs font-bold">AM</div>
+                            <span class="absolute bottom-0 right-0 block h-2 w-2 rounded-full ring-2 ring-[--color-card] bg-[--color-success]"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="theme-toggle" class="p-2 rounded-md hover:bg-gray-800/50">
+                    <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg id="theme-icon-light" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+
+                <div class="relative">
+                    <button class="flex items-center space-x-2 focus:outline-none">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-r from-[--color-primary] to-[--color-accent] flex items-center justify-center text-white text-xs font-bold">AD</div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+
+                    <div class="absolute right-0 mt-2 w-48 bg-[--color-card] rounded-md shadow-lg py-1 border border-gray-800/50 z-10 hidden">
+                        <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-800/50">Profile</a>
+                        <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-800/50">Settings</a>
+                        <div class="border-t border-gray-800/50 my-1"></div>
+                        <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-800/50">Log out</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main content area -->
+        <main class="flex-1 overflow-y-auto p-6">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold">Dashboard</h1>
+                <div class="flex items-center space-x-2 text-sm text-gray-500">
+                    <a href="#" class="hover:text-[--color-primary]">Home</a>
+                    <span>/</span>
+                    <span>Dashboard</span>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-6">
+                <div class="card hover:shadow-lg transition-shadow duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Total Users</p>
+                            <h3 class="text-2xl font-bold">12,458</h3>
+                            <p class="text-sm text-[--color-success] flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                                    <polyline points="16 7 22 7 22 13"></polyline>
+                                </svg>
+                                <span>+12% vs yesterday</span>
+                            </p>
+                        </div>
+                        <div class="p-3 rounded-full bg-[--color-primary]/10 text-[--color-primary]">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card hover:shadow-lg transition-shadow duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Total Ticks</p>
+                            <h3 class="text-2xl font-bold">245,789</h3>
+                            <p class="text-sm text-[--color-success] flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                                    <polyline points="16 7 22 7 22 13"></polyline>
+                                </svg>
+                                <span>+8% vs last week</span>
+                            </p>
+                        </div>
+                        <div class="p-3 rounded-full bg-[--color-accent]/10 text-[--color-accent]">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card hover:shadow-lg transition-shadow duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Completed Links</p>
+                            <h3 class="text-2xl font-bold">8,742</h3>
+                            <p class="text-sm text-[--color-success] flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                                    <polyline points="16 7 22 7 22 13"></polyline>
+                                </svg>
+                                <span>+15% vs last week</span>
+                            </p>
+                        </div>
+                        <div class="p-3 rounded-full bg-[--color-success]/10 text-[--color-success]">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card hover:shadow-lg transition-shadow duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Active Today</p>
+                            <h3 class="text-2xl font-bold">3,215</h3>
+                            <p class="text-sm text-[--color-success] flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                                    <polyline points="16 7 22 7 22 13"></polyline>
+                                </svg>
+                                <span>+5% vs yesterday</span>
+                            </p>
+                        </div>
+                        <div class="p-3 rounded-full bg-[--color-warning]/10 text-[--color-warning]">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card hover:shadow-lg transition-shadow duration-200">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Admins Online</p>
+                            <h3 class="text-2xl font-bold">2</h3>
+                            <div class="group relative inline-block">
+                                <span class="text-sm text-[--color-primary] cursor-pointer">View all</span>
+                                <div class="absolute left-0 mt-2 w-48 bg-[--color-card] rounded-md shadow-lg py-1 border border-gray-800/50 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                    <div class="px-4 py-2 text-sm flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full bg-[--color-primary] flex items-center justify-center text-white text-xs font-bold">JD</div>
+                                        <span>John Doe</span>
+                                    </div>
+                                    <div class="px-4 py-2 text-sm flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full bg-[--color-accent] flex items-center justify-center text-white text-xs font-bold">AM</div>
+                                        <span>Alice Miller</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-full bg-[--color-danger]/10 text-[--color-danger]">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                <line x1="12" y1="19" x2="12" y2="23"></line>
+                                <line x1="8" y1="23" x2="16" y2="23"></line>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="card">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold">Peak Connection Hours (Last 7 days)</h3>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 text-xs rounded-md bg-[--color-primary]/10 text-[--color-primary]">7d</button>
+                            <button class="px-3 py-1 text-xs rounded-md bg-gray-800/50 hover:bg-gray-800/70">30d</button>
+                        </div>
+                    </div>
+                    <div id="heatmap-chart" class="h-64"></div>
+                </div>
+
+                <div class="card">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold">Daily Activity</h3>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 text-xs rounded-md bg-[--color-primary]/10 text-[--color-primary]">Ticks</button>
+                            <button class="px-3 py-1 text-xs rounded-md bg-gray-800/50 hover:bg-gray-800/70">Matches</button>
+                        </div>
+                    </div>
+                    <div id="line-chart" class="h-64"></div>
+                </div>
+            </div>
+
+            <!-- Bottom section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Top Cities/Universities -->
+                <div class="card lg:col-span-1">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold">Top 10 Cities by Activity</h3>
+                        <button class="text-xs text-[--color-primary] hover:underline">View all</button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm font-medium">New York</span>
+                            </div>
+                            <div class="w-1/2 flex items-center">
+                                <div class="h-2 bg-[--color-primary] rounded-full" style="width: 85%"></div>
+                                <span class="ml-2 text-xs text-gray-500">3,245</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm font-medium">Los Angeles</span>
+                            </div>
+                            <div class="w-1/2 flex items-center">
+                                <div class="h-2 bg-[--color-primary] rounded-full" style="width: 72%"></div>
+                                <span class="ml-2 text-xs text-gray-500">2,745</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm font-medium">Chicago</span>
+                            </div>
+                            <div class="w-1/2 flex items-center">
+                                <div class="h-2 bg-[--color-primary] rounded-full" style="width: 65%"></div>
+                                <span class="ml-2 text-xs text-gray-500">2,481</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm font-medium">Houston</span>
+                            </div>
+                            <div class="w-1/2 flex items-center">
+                                <div class="h-2 bg-[--color-primary] rounded-full" style="width: 58%"></div>
+                                <span class="ml-2 text-xs text-gray-500">2,112</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm font-medium">Phoenix</span>
+                            </div>
+                            <div class="w-1/2 flex items-center">
+                                <div class="h-2 bg-[--color-primary] rounded-full" style="width: 52%"></div>
+                                <span class="ml-2 text-xs text-gray-500">1,897</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Users -->
+                <div class="card lg:col-span-1">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold">Recent Users</h3>
+                        <button class="text-xs text-[--color-primary] hover:underline">View all</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-800/50">
+                            <thead>
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alias</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Age</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">City</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Verified</th>
+                            </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-800/50">
+                            <tr class="hover:bg-gray-800/50">
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">teen_dreamer</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">17</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">New York</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[--color-success]/10 text-[--color-success]">Yes</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-800/50">
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">soccer_fan99</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">16</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">Los Angeles</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[--color-danger]/10 text-[--color-danger]">No</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-800/50">
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">music_lover</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">18</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">Chicago</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[--color-success]/10 text-[--color-success]">Yes</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-800/50">
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">artistic_soul</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">17</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">Houston</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[--color-danger]/10 text-[--color-danger]">No</span>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-800/50">
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">bookworm42</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">16</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">Phoenix</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-[--color-success]/10 text-[--color-success]">Yes</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pending Reports -->
+                <div class="card lg:col-span-1">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold">Pending Reports</h3>
+                        <button class="text-xs text-[--color-primary] hover:underline">View all</button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="p-3 rounded-md bg-gray-800/50">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="text-xs px-2 py-1 rounded-full bg-[--color-danger]/10 text-[--color-danger]">Inappropriate</span>
+                                    <p class="text-sm mt-1">Reported by: teen_dreamer</p>
+                                    <p class="text-xs text-gray-500 mt-1">"Profile picture violates guidelines"</p>
+                                </div>
+                                <div class="text-xs text-gray-500">2h ago</div>
+                            </div>
+                            <div class="flex space-x-2 mt-3">
+                                <button class="text-xs px-2 py-1 rounded-md bg-[--color-success]/10 text-[--color-success] hover:bg-[--color-success]/20">Approve</button>
+                                <button class="text-xs px-2 py-1 rounded-md bg-[--color-danger]/10 text-[--color-danger] hover:bg-[--color-danger]/20">Remove</button>
+                                <button class="text-xs px-2 py-1 rounded-md bg-[--color-warning]/10 text-[--color-warning] hover:bg-[--color-warning]/20">Warn</button>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-md bg-gray-800/50">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="text-xs px-2 py-1 rounded-full bg-[--color-warning]/10 text-[--color-warning]">Spam</span>
+                                    <p class="text-sm mt-1">Reported by: music_lover</p>
+                                    <p class="text-xs text-gray-500 mt-1">"User sending repeated messages"</p>
+                                </div>
+                                <div class="text-xs text-gray-500">4h ago</div>
+                            </div>
+                            <div class="flex space-x-2 mt-3">
+                                <button class="text-xs px-2 py-1 rounded-md bg-[--color-success]/10 text-[--color-success] hover:bg-[--color-success]/20">Approve</button>
+                                <button class="text-xs px-2 py-1 rounded-md bg-[--color-danger]/10 text-[--color-danger] hover:bg-[--color-danger]/20">Remove</button>
+                                <button class="text-xs px-2 py-1 rounded-md bg-[--color-warning]/10 text-[--color-warning] hover:bg-[--color-warning]/20">Warn</button>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded-md bg-gray-800/50">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="text-xs px-2 py-1 rounded-full bg-[--color-danger]/10 text-[--color-danger]">Harassment</span>
+                                    <p class="text-sm mt-1">Reported by: artistic_soul</p>
+                                    <p class="text-xs text-gray-500 mt-1">"Received inappropriate messages"</p>
+                                </div>
+                                <div class="text-xs text-gray-500">6h ago</div>
+                            </div>
+                            <div class="flex space-x-2 mt-3">
+                                <button class="text-xs px-2 py-1 rounded-md bg-[--color-success]/10 text-[--color-success] hover:bg-[--color-success]/20">Approve</button>
+                                <button class="text-xs px-2 py-1 rounded-md bg-[--color-danger]/10 text-[--color-danger] hover:bg-[--color-danger]/20">Remove</button>
+                                <button class="text-xs px-2 py-1 rounded-md bg-[--color-warning]/10 text-[--color-warning] hover:bg-[--color-warning]/20">Warn</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="mt-6 flex flex-wrap gap-4">
+                <button class="btn-primary flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <span>Create Announcement</span>
+                </button>
+
+                <button class="btn-accent flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <line x1="20" y1="8" x2="20" y2="14"></line>
+                        <line x1="23" y1="11" x2="17" y2="11"></line>
+                    </svg>
+                    <span>Invite Admin</span>
+                </button>
+
+                <button class="flex items-center space-x-2 px-4 py-2 rounded-md border border-[--color-primary] text-[--color-primary] hover:bg-[--color-primary]/10 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>View Active Users Now</span>
+                </button>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="fixed bottom-4 right-4 p-4 bg-[--color-card] rounded-lg shadow-lg border border-gray-800/50 transform translate-y-10 opacity-0 transition-all duration-200 hidden">
+    <div class="flex items-center space-x-3">
+        <div class="p-2 rounded-full bg-[--color-success]/10 text-[--color-success]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+        </div>
+        <div>
+            <p class="font-medium">Success!</p>
+            <p class="text-sm text-gray-500">Your action was completed successfully.</p>
+        </div>
+        <button class="p-1 rounded-full hover:bg-gray-800/50">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Theme toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIconDark = document.getElementById('theme-icon-dark');
+    const themeIconLight = document.getElementById('theme-icon-light');
+
+    if (localStorage.getItem('theme') === 'light' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+        document.documentElement.classList.add('light');
+        themeIconDark.classList.add('hidden');
+        themeIconLight.classList.remove('hidden');
+    } else {
+        document.documentElement.classList.remove('light');
+        themeIconDark.classList.remove('hidden');
+        themeIconLight.classList.add('hidden');
+    }
+
+    themeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('light');
+        if (document.documentElement.classList.contains('light')) {
+            localStorage.setItem('theme', 'light');
+            themeIconDark.classList.add('hidden');
+            themeIconLight.classList.remove('hidden');
+        } else {
+            localStorage.setItem('theme', 'dark');
+            themeIconDark.classList.remove('hidden');
+            themeIconLight.classList.add('hidden');
+        }
+    });
+
+    // Show toast notification
+    function showToast() {
+        const toast = document.getElementById('toast');
+        toast.classList.remove('hidden');
+        toast.classList.remove('translate-y-10', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+
+        setTimeout(() => {
+            toast.classList.remove('translate-y-0', 'opacity-100');
+            toast.classList.add('translate-y-10', 'opacity-0');
+            setTimeout(() => toast.classList.add('hidden'), 200);
+        }, 3000);
+    }
+
+    // Initialize charts
+    document.addEventListener('DOMContentLoaded', function() {
+        // Heatmap chart
+        const heatmapOptions = {
+            series: [{
+                name: 'Connections',
+                data: [
+                    { x: '00:00', y: 120 },
+                    { x: '01:00', y: 90 },
+                    { x: '02:00', y: 60 },
+                    { x: '03:00', y: 50 },
+                    { x: '04:00', y: 40 },
+                    { x: '05:00', y: 30 },
+                    { x: '06:00', y: 40 },
+                    { x: '07:00', y: 80 },
+                    { x: '08:00', y: 150 },
+                    { x: '09:00', y: 200 },
+                    { x: '10:00', y: 180 },
+                    { x: '11:00', y: 170 },
+                    { x: '12:00', y: 190 },
+                    { x: '13:00', y: 220 },
+                    { x: '14:00', y: 250 },
+                    { x: '15:00', y: 280 },
+                    { x: '16:00', y: 300 },
+                    { x: '17:00', y: 320 },
+                    { x: '18:00', y: 290 },
+                    { x: '19:00', y: 260 },
+                    { x: '20:00', y: 240 },
+                    { x: '21:00', y: 210 },
+                    { x: '22:00', y: 180 },
+                    { x: '23:00', y: 150 }
+                ]
+            }],
+            chart: {
+                height: '100%',
+                type: 'heatmap',
+                toolbar: {
+                    show: false
+                },
+                animations: {
+                    enabled: true,
+                    easing: 'easeout',
+                    speed: 800
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            colors: ["#8B5CF6"],
+            xaxis: {
+                type: 'category',
+                categories: Array.from({length: 24}, (_, i) => `${i}:00`)
+            },
+            tooltip: {
+                enabled: true,
+                theme: document.documentElement.classList.contains('light') ? 'light' : 'dark'
+            }
+        };
+
+        const heatmapChart = new ApexCharts(document.querySelector("#heatmap-chart"), heatmapOptions);
+        heatmapChart.render();
+
+        // Line chart
+        const lineOptions = {
+            series: [{
+                name: "Ticks",
+                data: [30, 40, 35, 50, 49, 60, 70, 91, 125, 110, 95, 80]
+            }],
+            chart: {
+                height: '100%',
+                type: 'line',
+                toolbar: {
+                    show: false
+                },
+                animations: {
+                    enabled: true,
+                    easing: 'easeout',
+                    speed: 800
+                }
+            },
+            stroke: {
+                width: 3,
+                curve: 'smooth'
+            },
+            xaxis: {
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            },
+            colors: ["#8B5CF6"],
+            tooltip: {
+                enabled: true,
+                theme: document.documentElement.classList.contains('light') ? 'light' : 'dark'
+            }
+        };
+
+        const lineChart = new ApexCharts(document.querySelector("#line-chart"), lineOptions);
+        lineChart.render();
+
+        // Simulate loading data
+        setTimeout(() => {
+            showToast();
+        }, 1000);
+    });
+
+    // User dropdown
+    const userDropdownButton = document.querySelector('.relative button');
+    const userDropdown = document.querySelector('.relative .hidden');
+
+    userDropdownButton.addEventListener('click', () => {
+        userDropdown.classList.toggle('hidden');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!userDropdownButton.contains(e.target) && !userDropdown.contains(e.target)) {
+            userDropdown.classList.add('hidden');
+        }
+    });
+</script>
+</body>
+</html>

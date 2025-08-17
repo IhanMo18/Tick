@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es" class="min-h-full">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SafeTeen — Admin Dashboard (Preview)</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <!-- TOKENS + utilidades (sin inline styles) -->
+    <style>
+        :root{
+            --color-primary: var(--primary, #6C5CE7);
+            --color-primary-foreground: var(--on-primary, #FFFFFF);
+            --color-accent: var(--secondary, #2ED573);
+
+            --color-bg: var(--bg-dark, #0B0F1A);
+            --color-card: var(--card-dark, #121726);
+            --color-muted: var(--muted-dark, #8892A6);
+
+            --color-success: var(--success, #22C55E);
+            --color-warning: var(--warning, #F59E0B);
+            --color-danger: var(--danger, #EF4444);
+
+            --ring: var(--ring-color, rgba(108,92,231,.55));
+            --hairline: color-mix(in srgb, var(--color-muted) 16%, transparent);
+            --overlay: color-mix(in srgb, var(--color-card) 92%, transparent);
+        }
+        html.light{
+            --color-bg: var(--bg-light, #F7F8FB);
+            --color-card: var(--card-light, #FFFFFF);
+            --color-muted: var(--muted-light, #64748B);
+            --ring: var(--ring-color-light, rgba(108,92,231,.45));
+            --hairline: color-mix(in srgb, var(--color-muted) 22%, transparent);
+            --overlay: color-mix(in srgb, var(--color-card) 98%, transparent);
+        }
+
+        .bg-app{ background-color: var(--color-bg); }
+        .bg-card{ background-color: var(--color-card); }
+        .text-muted{ color: var(--color-muted); }
+        .ring-focus:focus-visible{ outline: 2px solid transparent; box-shadow: 0 0 0 3px var(--ring); }
+
+        .card{ background:var(--color-card); border:1px solid var(--hairline); border-radius:1rem;
+            box-shadow:0 10px 30px rgba(0,0,0,.18); }
+        .input{ width:100%; border-radius:.9rem; padding:.55rem .8rem; border:1px solid var(--hairline);
+            background: color-mix(in srgb, var(--color-card) 88%, transparent); outline:none; }
+        .input:focus{ box-shadow:0 0 0 3px var(--ring); border-color:transparent; }
+        .btn-ghost{ display:inline-flex; align-items:center; gap:.5rem; padding:.5rem .75rem; border-radius:.9rem; }
+        .btn-ghost:hover{ background: color-mix(in srgb, var(--color-card) 85%, transparent); }
+        html.light .btn-ghost:hover{ background: color-mix(in srgb, var(--color-card) 94%, transparent); }
+        .btn-primary{ display:inline-flex; align-items:center; gap:.5rem; justify-content:center; padding:.6rem 1rem;
+            border-radius:1rem; font-weight:600; color:var(--color-primary-foreground); background:var(--color-primary); }
+        .btn-primary:focus-visible{ outline:2px solid transparent; box-shadow:0 0 0 3px var(--ring); }
+    </style>
+
+    <!-- Tema (persistencia) -->
+    <script>
+        (function(){
+            const key="theme"; const saved = localStorage.getItem(key);
+            if(saved==="light") document.documentElement.classList.add("light");
+            window.toggleTheme = () => {
+                const isLight = document.documentElement.classList.toggle('light');
+                localStorage.setItem(key, isLight ? 'light' : 'dark');
+                window.__updateChartsTheme && window.__updateChartsTheme();
+            }
+        })();
+    </script>
+</head>
+<body class="bg-app text-white/90 min-h-screen">
+<header class="sticky top-0 z-30 border-b" style="border-color:var(--hairline); background:var(--overlay); backdrop-filter: blur(6px);">
+    <div class="h-14 px-4 flex items-center gap-3">
+        <div class="flex-1"></div>
+        <button class="btn-ghost ring-focus" onclick="toggleTheme()" aria-label="Alternar tema">🌗</button>
+    </div>
+</header>
+
+<main class="px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <!-- KPIs resumidos (opcional) -->
+    <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <div class="card p-4"><div class="text-sm text-muted">Usuarios Totales</div><div class="text-2xl font-semibold">128,500</div></div>
+        </div>
+        <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <div class="card p-4"><div class="text-sm text-muted">Ticks Totales</div><div class="text-2xl font-semibold">934,122</div></div>
+        </div>
+        <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <div class="card p-4"><div class="text-sm text-muted">Enlaces Completos</div><div class="text-2xl font-semibold">210,345</div></div>
+        </div>
+        <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <div class="card p-4"><div class="text-sm text-muted">Activos Hoy</div><div class="text-2xl font-semibold">12,342</div></div>
+        </div>
+    </div>
+
+    <!-- Gráfica 1: Horas con más conexión -->
+    <section class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 lg:col-span-7 card p-4">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="font-semibold">Horas con más conexión</h3>
+                <select id="range" class="input w-36">
+                    <option value="7d">Últimos 7 días</option>
+                    <option value="30d">Últimos 30 días</option>
+                </select>
+            </div>
+            <div id="chart-hours" class="h-[280px]"></div>
+        </div>
+
+        <!-- Gráfica 2: Serie temporal (ticks vs matches con toggle) -->
+        <div class="col-span-12 lg:col-span-5 card p-4">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="font-semibold">Ticks/Matches por día</h3>
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                    <input id="toggleMatches" type="checkbox" class="sr-only" />
+                    <span class="relative inline-flex items-center h-6 w-11 rounded-full transition bg-white/25" id="switch">
+              <span class="inline-block h-5 w-5 rounded-full bg-white transform translate-x-1 transition" id="switch-dot"></span>
+            </span>
+                    <span class="text-sm text-muted">Mostrar matches</span>
+                </label>
+            </div>
+            <div id="chart-series" class="h-[280px]"></div>
+        </div>
+
+        <!-- Gráfica 3: Top 10 ciudades -->
+        <div class="col-span-12 xl:col-span-6 card p-4">
+            <h3 class="font-semibold mb-2">Top 10 Ciudades</h3>
+            <div id="chart-cities" class="h-[320px]"></div>
+        </div>
+
+        <!-- Gráfica 4: Top 10 Universidades -->
+        <div class="col-span-12 xl:col-span-6 card p-4">
+            <h3 class="font-semibold mb-2">Top 10 Universidades</h3>
+            <div id="chart-unis" class="h-[320px]"></div>
+        </div>
+    </section>
+
+    <!-- Acciones rápidas -->
+    <div class="flex flex-wrap gap-2">
+        <button class="btn-primary">Crear anuncio</button>
+        <button class="btn-ghost ring-focus">Invitar admin</button>
+        <a class="btn-ghost ring-focus" href="#users">Ver usuarios activos ahora</a>
+    </div>
+</main>
+
+<script>
+    // Helpers para tokens y tema
+    function getTokens(){
+        const s = getComputedStyle(document.documentElement);
+        const primary = s.getPropertyValue('--color-primary').trim();
+        const accent  = s.getPropertyValue('--color-accent').trim();
+        const card    = s.getPropertyValue('--color-card').trim();
+        const muted   = s.getPropertyValue('--color-muted').trim();
+        const mode    = document.documentElement.classList.contains('light') ? 'light' : 'dark';
+        return { primary, accent, card, muted, mode };
+    }
+
+    // Datos fake (simulan /api/admin/stats)
+    function dataByHour(days=7){
+        const base = Array.from({length:24}, (_,h)=>({x:h, y:Math.round(50+Math.random()*150)}));
+        if(days===30){ return base.map(p=>({x:p.x, y: Math.round(p.y*1.2)})); }
+        return base;
+    }
+    function seriesDays(n=30, factor=1){
+        const today = new Date(); const arr=[];
+        for(let i=n-1;i>=0;i--){
+            const d = new Date(today); d.setDate(today.getDate()-i);
+            arr.push({x: d.toISOString().slice(0,10), y: Math.round(200+Math.random()*250*factor)});
+        }
+        return arr;
+    }
+    function top10(prefix){
+        return Array.from({length:10}, (_,i)=>({label:`${prefix} ${i+1}`, value: Math.round(100+Math.random()*900)}));
+    }
+
+    // Instancias
+    let chartHours, chartSeries, chartCities, chartUnis;
+    function makeCharts(){
+        const t = getTokens();
+
+        // Horas (bar)
+        const hoursData = dataByHour(7);
+        const hoursOpts = {
+            chart: { type:'bar', height:280, toolbar:{show:false}, foreColor: t.muted, background: undefined },
+            theme: { mode: t.mode },
+            colors: [t.primary],
+            grid: { borderColor: t.muted+'33' },
+            plotOptions:{ bar:{ columnWidth:'60%', borderRadius:6 } },
+            dataLabels:{ enabled:false },
+            series:[{ name:'Conexiones', data: hoursData.map(p=>p.y) }],
+            xaxis:{ categories: hoursData.map(p=>p.x), title:{ text:'Hora (0–23)' } },
+            yaxis:{ title:{ text:'Usuarios' } },
+            tooltip:{ theme: t.mode }
+        };
+        chartHours = new ApexCharts(document.querySelector("#chart-hours"), hoursOpts);
+        chartHours.render();
+
+        // Serie temporal (area) — por defecto Ticks
+        const ticks = seriesDays(30, 1);
+        const matches = seriesDays(30, 0.42);
+        const seriesOpts = {
+            chart:{ type:'area', height:280, toolbar:{show:false}, foreColor:t.muted },
+            theme:{ mode:t.mode },
+            colors:[t.accent],
+            dataLabels:{ enabled:false },
+            stroke:{ curve:'smooth', width:2 },
+            fill:{ type:'gradient', gradient:{ opacityFrom:0.35, opacityTo:0.05 } },
+            series:[{ name:'Ticks', data: ticks }],
+            xaxis:{ type:'category', categories: ticks.map(p=>p.x) },
+            yaxis:{ title:{ text:'Cantidad' } },
+            grid:{ borderColor: t.muted+'33' },
+            tooltip:{ theme:t.mode }
+        };
+        chartSeries = new ApexCharts(document.querySelector("#chart-series"), seriesOpts);
+        chartSeries.render();
+
+        // Top ciudades (bar horizontal)
+        const cities = top10('Ciudad');
+        const citiesOpts = {
+            chart:{ type:'bar', height:320, toolbar:{show:false}, foreColor:t.muted },
+            theme:{ mode:t.mode },
+            colors:[t.primary],
+            plotOptions:{ bar:{ horizontal:true, borderRadius:6, barHeight:'70%' } },
+            dataLabels:{ enabled:false },
+            series:[{ name:'Actividad', data: cities.map(c=>c.value) }],
+            xaxis:{ categories: cities.map(c=>c.label) },
+            grid:{ borderColor: t.muted+'33' },
+            tooltip:{ theme:t.mode }
+        };
+        chartCities = new ApexCharts(document.querySelector("#chart-cities"), citiesOpts);
+        chartCities.render();
+
+        // Top universidades (bar horizontal)
+        const unis = top10('Uni');
+        const unisOpts = {
+            chart:{ type:'bar', height:320, toolbar:{show:false}, foreColor:t.muted },
+            theme:{ mode:t.mode },
+            colors:[t.primary],
+            plotOptions:{ bar:{ horizontal:true, borderRadius:6, barHeight:'70%' } },
+            dataLabels:{ enabled:false },
+            series:[{ name:'Actividad', data: unis.map(c=>c.value) }],
+            xaxis:{ categories: unis.map(c=>c.label) },
+            grid:{ borderColor: t.muted+'33' },
+            tooltip:{ theme:t.mode }
+        };
+        chartUnis = new ApexCharts(document.querySelector("#chart-unis"), unisOpts);
+        chartUnis.render();
+
+        // Toggle Matches
+        const toggle = document.getElementById('toggleMatches');
+        const switchEl = document.getElementById('switch'); const dot = document.getElementById('switch-dot');
+        function uiToggle(on){ switchEl.classList.toggle('bg-white/25', !on); switchEl.classList.toggle('bg-[color:var(--color-primary)]', on); dot.classList.toggle('translate-x-6', on); }
+        uiToggle(false);
+        toggle.onchange = () => {
+            const on = toggle.checked; uiToggle(on);
+            const data = on ? matches : ticks;
+            chartSeries.updateOptions({
+                colors: [ on ? t.primary : t.accent ],
+                series: [{ name: on ? 'Matches' : 'Ticks', data }]
+            }, false, true);
+        };
+
+        // Selector de rango (7d/30d)
+        document.getElementById('range').onchange = (e) => {
+            const v = e.target.value; const d = dataByHour(v==='30d'?30:7);
+            chartHours.updateOptions({
+                xaxis:{ categories: d.map(p=>p.x) },
+                series:[{ name:'Conexiones', data: d.map(p=>p.y) }]
+            }, false, true);
+        };
+
+        // Exponer actualizador de tema
+        window.__updateChartsTheme = () => {
+            const t2 = getTokens();
+            [chartHours, chartSeries, chartCities, chartUnis].forEach(ch => ch.updateOptions({
+                theme:{ mode:t2.mode },
+                foreColor: t2.muted,
+                grid:{ borderColor: t2.muted+'33' }
+            }, false, true));
+            chartHours.updateOptions({ colors:[t2.primary] }, false, true);
+            chartSeries.updateOptions({ colors:[document.getElementById('toggleMatches').checked ? t2.primary : t2.accent] }, false, true);
+            chartCities.updateOptions({ colors:[t2.primary] }, false, true);
+            chartUnis.updateOptions({ colors:[t2.primary] }, false, true);
+        };
+    }
+
+    // Boot
+    document.addEventListener('DOMContentLoaded', makeCharts);
+</script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+@page "/"
+@inject NavigationManager Navigation
+<title>WebTick - Conecta de forma segura</title>
+
+
+
+  
+  <!-- Header -->
+  <header class="site">
+    <div class="container section" style="padding-block:12px">
+      <div class="between">
+        <div class="brand">
+          <div class="brand-badge" aria-hidden="true"><i class="fas fa-heart"></i></div>
+          <h1 class="brand-name">SafeTeen</h1>
+        </div>
+
+        <nav class="center main" aria-label="Principal" style="display:none" id="navMd">
+          <a href="#" class="nav-link">Inicio</a>
+          <a href="#" class="nav-link">Descubrir</a>
+          <a href="#" class="nav-link">Chats</a>
+          <a href="#" class="nav-link">Perfil</a>
+        </nav>
+
+        <div class="center" style="gap:12px">
+          <button id="themeToggle" class="icon-btn focusable" aria-label="Cambiar tema">
+            <i id="themeIcon" class="fas fa-moon"></i>
+          </button>
+          <button class="icon-btn" style="background:linear-gradient(90deg,#8b5cf6,#4f46e5); color:#fff">
+            <i class="fas fa-user"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main>
+    <!-- Hero -->
+    <section class="section hero">
+      <div class="container" style="text-align:center">
+        <h2>Conecta de forma segura</h2>
+        <p class="stack-3">
+          Descubre personas con tus mismos intereses en un espacio diseñado especialmente para tu seguridad y privacidad.
+        </p>
+
+        <div class="center" style="gap:16px; justify-content:center; margin-top:28px; flex-wrap:wrap">
+          <button @onclick="GoToRegister" id="btnCrearPerfil" class="btn btn-primary">Crear perfil</button>
+          <button id="btnExplorar" class="btn btn-ghost">Explorar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Perfiles destacados -->
+    <section class="section">
+      <div class="container">
+        <h3 style="text-align:center; font-size:22px; font-weight:800; margin:0 0 24px">Perfiles destacados</h3>
+
+        <div class="cards">
+          <!-- Card 1 -->
+          <article class="card">
+            <div class="center" style="gap:16px; margin-bottom:12px">
+              <div class="avatar">A</div>
+              <div>
+                <h4 style="margin:0; font-weight:800">Alex</h4>
+                <p class="muted" style="margin:2px 0 0">16 años • Madrid</p>
+              </div>
+            </div>
+            <p class="muted" style="margin:0 0 12px">Apasionado de la música y el arte digital</p>
+            <div class="center" style="gap:8px; flex-wrap:wrap; justify-content:flex-start">
+              <span class="chip">Música</span>
+              <span class="chip">Arte</span>
+              <span class="chip">Tecnología</span>
+            </div>
+          </article>
+
+          <!-- Card 2 -->
+          <article class="card">
+            <div class="center" style="gap:16px; margin-bottom:12px">
+              <div class="avatar pink">S</div>
+              <div>
+                <h4 style="margin:0; font-weight:800">Sofía</h4>
+                <p class="muted" style="margin:2px 0 0">15 años • Barcelona</p>
+              </div>
+            </div>
+            <p class="muted" style="margin:0 0 12px">Amante del deporte y la naturaleza</p>
+            <div class="center" style="gap:8px; flex-wrap:wrap; justify-content:flex-start">
+              <span class="chip">Deporte</span>
+              <span class="chip">Naturaleza</span>
+              <span class="chip">Viajes</span>
+            </div>
+          </article>
+
+          <!-- Card 3 -->
+          <article class="card">
+            <div class="center" style="gap:16px; margin-bottom:12px">
+              <div class="avatar cyan">M</div>
+              <div>
+                <h4 style="margin:0; font-weight:800">Miguel</h4>
+                <p class="muted" style="margin:2px 0 0">17 años • Valencia</p>
+              </div>
+            </div>
+            <p class="muted" style="margin:0 0 12px">Entusiasta de la programación y los videojuegos</p>
+            <div class="center" style="gap:8px; flex-wrap:wrap; justify-content:flex-start">
+              <span class="chip">Programación</span>
+              <span class="chip">Videojuegos</span>
+              <span class="chip">Ciencia</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Intereses -->
+    <section class="section">
+      <div class="container">
+        <h3 style="text-align:center; font-size:22px; font-weight:800; margin:0 0 24px">Descubre por intereses</h3>
+        <div class="center" style="gap:12px; justify-content:center; flex-wrap:wrap">
+          <button class="chip"><i class="fas fa-music" style="color:#8b5cf6"></i> Música</button>
+          <button class="chip"><i class="fas fa-futbol" style="color:#16a34a"></i> Deporte</button>
+          <button class="chip"><i class="fas fa-paint-brush" style="color:#3b82f6"></i> Arte</button>
+          <button class="chip"><i class="fas fa-laptop-code" style="color:#6366f1"></i> Tecnología</button>
+          <button class="chip"><i class="fas fa-book" style="color:#f59e0b"></i> Lectura</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Seguridad -->
+    <section class="section">
+      <div class="container">
+        <div class="secure">
+          <h3 style="margin-top:0; margin-bottom:16px; font-size:22px; font-weight:800">Tu seguridad es nuestra prioridad</h3>
+
+          <div class="grid3">
+            <div class="center" style="align-items:flex-start">
+              <div class="bubble"><i class="fas fa-shield-alt"></i></div>
+              <div>
+                <h4 style="margin:0 0 6px; font-weight:700">Privacidad por defecto</h4>
+                <p class="sub" style="margin:0">Tus datos están protegidos desde el primer momento</p>
+              </div>
+            </div>
+
+            <div class="center" style="align-items:flex-start">
+              <div class="bubble"><i class="fas fa-comments"></i></div>
+              <div>
+                <h4 style="margin:0 0 6px; font-weight:700">Chat solo tras match</h4>
+                <p class="sub" style="margin:0">Habla solo con personas que también te interesan</p>
+              </div>
+            </div>
+
+            <div class="center" style="align-items:flex-start">
+              <div class="bubble"><i class="fas fa-flag"></i></div>
+              <div>
+                <h4 style="margin:0 0 6px; font-weight:700">Reportar y bloquear</h4>
+                <p class="sub" style="margin:0">Herramientas siempre disponibles para tu protección</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Tips -->
+    <section class="section">
+      <div class="container">
+        <h3 style="text-align:center; font-size:22px; font-weight:800; margin:0 0 24px">Consejos para una experiencia segura</h3>
+        <div class="grid3">
+          <div class="tip">
+            <div class="badge badge-green"><i class="fas fa-lightbulb"></i></div>
+            <h4 style="margin:0 0 8px; font-weight:700">Comparte con cuidado</h4>
+            <p class="muted" style="margin:0">Nunca compartas información personal como tu dirección o número de teléfono.</p>
+          </div>
+
+          <div class="tip">
+            <div class="badge badge-blue"><i class="fas fa-users"></i></div>
+            <h4 style="margin:0 0 8px; font-weight:700">Conoce gradualmente</h4>
+            <p class="muted" style="margin:0">Tómate tu tiempo para conocer a las personas antes de compartir más.</p>
+          </div>
+
+          <div class="tip">
+            <div class="badge badge-purple"><i class="fas fa-bell"></i></div>
+            <h4 style="margin:0 0 8px; font-weight:700">Denuncia lo inapropiado</h4>
+            <p class="muted" style="margin:0">Si algo no te parece correcto, usa las herramientas de reporte.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site">
+    <div class="container section">
+      <div class="foot-grid">
+        <div>
+          <div class="brand" style="margin-bottom:12px">
+            <div class="brand-badge" style="width:32px; height:32px; border-radius:8px; font-size:14px"><i class="fas fa-heart"></i></div>
+            <h3 class="brand-name" style="font-size:20px">SafeTeen</h3>
+          </div>
+          <p class="muted">Conectando jóvenes de forma segura y responsable.</p>
+        </div>
+
+        <div>
+          <div class="foot-title">Legal</div>
+          <a href="#" class="foot-link">Normas de la comunidad</a>
+          <a href="#" class="foot-link">Política de privacidad</a>
+          <a href="#" class="foot-link">Términos de uso</a>
+        </div>
+
+        <div>
+          <div class="foot-title">Ayuda</div>
+          <a href="#" class="foot-link">Centro de seguridad</a>
+          <a href="#" class="foot-link">Preguntas frecuentes</a>
+          <a href="#" class="foot-link">Contacto</a>
+        </div>
+
+        <div>
+          <div class="foot-title">Síguenos</div>
+          <div class="center" style="gap:12px">
+            <a href="#" class="icon-btn" style="background:#e5e7eb"><i class="fab fa-instagram" style="color:#374151"></i></a>
+            <a href="#" class="icon-btn" style="background:#e5e7eb"><i class="fab fa-twitter" style="color:#374151"></i></a>
+            <a href="#" class="icon-btn" style="background:#e5e7eb"><i class="fab fa-tiktok" style="color:#374151"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--border-light); margin-top:24px; padding-top:24px; text-align:center" class="muted">
+        <p style="margin:0">&copy; 2023 SafeTeen. Todos los derechos reservados. Diseñado para adolescentes de 13-17 años.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Match Modal -->
+  <div id="matchModal" class="modal-overlay hidden" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div style="text-align:center">
+        <div class="heart"><i class="fas fa-heart"></i></div>
+        <h3 style="margin:0 0 8px; font-size:22px; font-weight:800">¡Tienen un match!</h3>
+        <p class="muted" style="margin:0 0 16px">Has conectado con Alex. ¿Quieres iniciar una conversación?</p>
+        <div class="center" style="gap:12px; justify-content:center; flex-wrap:wrap">
+          <button class="btn btn-primary">Enviar primer saludo</button>
+          <button class="btn btn-ghost" id="btnIrChat">Ir al chat</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  @inject IJSRuntime JS
+  @implements IAsyncDisposable
+
+  @code {
+    IJSObjectReference? _module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+      if (firstRender)
+      {
+        _module = await JS.InvokeAsync<IJSObjectReference>(
+          "import",
+          "/Components/Pages/Index.razor.js"
+        );
+        await _module.InvokeVoidAsync("initIndex");
+      }
+    }
+
+    public async ValueTask DisposeAsync()
+      => await (_module?.DisposeAsync() ?? ValueTask.CompletedTask);
+
+    private void GoToRegister()
+    {
+      Navigation.NavigateTo("/register");
+    }
+
+
+  }
+
+
+
