@@ -44,7 +44,7 @@
         </p>
 
         <div class="center" style="gap:16px; justify-content:center; margin-top:28px; flex-wrap:wrap">
-          <button type="button" @onclick="GoToRegister" id="btnCrearPerfil" class="btn btn-primary">Crear perfil</button>
+          <button id="btnCrearPerfil" class="btn btn-primary">Crear perfil</button>
           <button id="btnExplorar" class="btn btn-ghost">Explorar</button>
         </div>
       </div>
@@ -263,12 +263,7 @@
 
     public async ValueTask DisposeAsync()
       => await (_module?.DisposeAsync() ?? ValueTask.CompletedTask);
-
-    private void GoToRegister()
-    {
-      Navigation.NavigateTo("/register");
-    }
-
+    
 
   }
 
